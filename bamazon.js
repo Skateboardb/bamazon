@@ -37,11 +37,22 @@ function allItems(answer) {
 	var query = "SELECT * FROM products ";
 	connection.query(query, function(err, res) {
 		if (err) throw err;
-
-		console.log(res);
-		// for (var i = 0; i < res.length; i++) {
-		// 	console.log(res);
-		// }
+		for (var i = 0; i < res.length; i++) {
+			console.log(
+				" Item: " +
+					res[i].product_name +
+					"\n Department: " +
+					res[i].department_name +
+					"\n Price: " +
+					res[i].price +
+					"\n no. available: " +
+					res[i].stock_quantity +
+					"\n Item ID: " +
+					res[i].item_id +
+					"\n ---------------------" +
+					"\n ---------------------"
+			);
+		}
 	});
 }
 
