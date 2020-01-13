@@ -18,23 +18,40 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
 	if (err) throw err;
 	console.log("connected successfully to bamazon");
+	userChoice();
 });
+// itemPrompt();
 
+function userChoice() {
+	inquirer
+		.prompt({
+			name: "action",
+			type: "list",
+			message: "What would you like to do?",
+			choices: ["Show available items", "Add to cart", "Exit"]
+		})
+		.then(function(answer) {
+			switch (answer.action) {
+				case "Show available items":
+					allItems();
+					itemPrompt();
+					break;
+
+				case "Add to cart":
+					itemPrompt();
+					break;
+
+				case "Exit":
+					connection.end();
+					break;
+			}
+		});
+}
 // Run App
-
-// function(answer) {
-// 	var query = "SELECT position, song, year FROM top5000 WHERE ?";
-// 	connection.query(query, { artist: answer.artist }, function(err, res) {
-// 	  if (err) throw err;
-// 	  for (var i = 0; i < res.length; i++) {
-// 		console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
-// 	  }
-// 	  runSearch();
-// 	});
-//   };
+var query = "SELECT * FROM products ";
+var available = [];
 
 function allItems(answer) {
-	var query = "SELECT * FROM products ";
 	connection.query(query, function(err, res) {
 		if (err) throw err;
 		for (var i = 0; i < res.length; i++) {
@@ -52,15 +69,41 @@ function allItems(answer) {
 					"\n ---------------------" +
 					"\n ---------------------"
 			);
+
+			available.push({
+				name: res[i].product_name,
+				ID: res[i].item_id
+			});
 		}
 	});
 }
 
-allItems();
-
 // shows all available products with ID, name, price, & # available
 
 // user interaction begins
+
+function processAnswers(answers) {
+	console.log("Does this look right?", answers);
+}
+
+var questions = [
+	{
+		name: "item",
+		type: "input",
+		message:
+			"Know what you wanna buy? Enter the ID of the item you'd like to purchase."
+	},
+	{
+		name: "quantity",
+		type: "number",
+		message: "How many would you like to order?"
+	}
+];
+
+function itemPrompt() {
+	inquirer.prompt(questions, processAnswers);
+}
+// itemPrompt();
 
 // -- prompts user to enter id of desired item
 
