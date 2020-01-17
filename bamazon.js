@@ -18,35 +18,10 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
 	if (err) throw err;
 	console.log("connected successfully to bamazon");
-	userChoice();
+	allItems();
 });
 // itemPrompt();
 
-function userChoice() {
-	inquirer
-		.prompt({
-			name: "action",
-			type: "list",
-			message: "What would you like to do?",
-			choices: ["Show available items", "Add to cart", "Exit"]
-		})
-		.then(function(answer) {
-			switch (answer.action) {
-				case "Show available items":
-					allItems();
-					itemPrompt();
-					break;
-
-				case "Add to cart":
-					itemPrompt();
-					break;
-
-				case "Exit":
-					connection.end();
-					break;
-			}
-		});
-}
 // Run App
 var query = "SELECT * FROM products ";
 var available = [];
@@ -56,15 +31,15 @@ function allItems(answer) {
 		if (err) throw err;
 		for (var i = 0; i < res.length; i++) {
 			console.log(
-				" Item: " +
+				" \n Item: " +
 					res[i].product_name +
-					"\n Department: " +
+					"|| Department: " +
 					res[i].department_name +
-					"\n Price: " +
+					"|| Price: " +
 					res[i].price +
-					"\n no. available: " +
+					"|| no. available: " +
 					res[i].stock_quantity +
-					"\n Item ID: " +
+					"|| Item ID: " +
 					res[i].item_id +
 					"\n ---------------------" +
 					"\n ---------------------"
@@ -75,6 +50,7 @@ function allItems(answer) {
 				ID: res[i].item_id
 			});
 		}
+		itemPrompt();
 	});
 }
 
@@ -103,7 +79,7 @@ var questions = [
 function itemPrompt() {
 	inquirer.prompt(questions, processAnswers);
 }
-// itemPrompt();
+// itemPrompt()
 
 // -- prompts user to enter id of desired item
 
