@@ -77,7 +77,7 @@ var questions = [
 ];
 
 function itemPrompt() {
-	inquirer.prompt(questions, processAnswers);
+	inquirer.prompt(questions, processAnswers).then();
 }
 // itemPrompt()
 
