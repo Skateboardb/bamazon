@@ -48,7 +48,8 @@ function allItems(answer) {
 			available.push({
 				name: res[i].product_name,
 				ID: res[i].item_id,
-				stock: res[i].stock_quantity
+				stock: res[i].stock_quantity,
+				price: res[i].price
 			});
 		}
 		itemPrompt();
@@ -78,38 +79,77 @@ var questions = [
 ];
 
 function itemPrompt() {
-	inquirer.prompt(questions).then(function(user) {
-		for (let i = 0; i < available.length; i++) {
-			if (user.item == available[i].ID && user.quantity <= available[i].stock) {
-				console.log("success");
-			} else if (
-				user.item == available[i].ID &&
-				user.quantity > available[i].stock
-			) {
-				inquirer.prompt({
-					type: "confirm",
-					name: "excess",
-					message:
-						"Oops! Looks like we only have " +
-						available[i].stock +
-						" in stock. Would you like to place an order for " +
-						available[i].stock +
-						"?"
-				});
-				// .then(function(user){
-				// 	if (user.excess) {
-				// 		console.log("")
-				// 	}
-				// });
-				// console.log(
-				// 	"Oops! Looks like we only have " +
-				// 		available[i].stock +
-				// 		" in stock. Would you like to place an order for" +
-				// 		available[i].stock +
-				// 		"?"
-				// );
+	connection.query(query, function(err, res) {
+		if (err) throw err;
+
+		inquirer.prompt(questions).then(function(user) {
+			for (var i = 0; i < available.length; i++) {
+				if (
+					user.item == available[i].ID &&
+					user.quantity <= available[i].stock
+				) {
+					connection.query(
+						"UPDATE products SET ? WHERE ?",
+						[
+							{
+								stock_quantity: res[i].stock_quantity - user.quantity
+							},
+							{
+								item_id: user.item
+							}
+						],
+						function(err) {
+							if (err) throw err;
+							console.log("Order placed succesfully!");
+							// console.log(stock_quantity);
+						}
+					);
+				} else if (
+					user.item == available[i].ID &&
+					user.quantity > available[i].stock
+				) {
+					inquirer
+						.prompt({
+							type: "confirm",
+							name: "excess",
+							message:
+								"Oops! Looks like we only have " +
+								available[i].stock +
+								" in stock. Would you like to place an order for " +
+								available[i].stock +
+								"?"
+						})
+						.then(function(user) {
+							if (user.excess) {
+								console.log("Okay! Placing order...");
+
+								connection.query(
+									"UPDATE products SET ? WHERE ?",
+									[
+										{
+											stock_quantity: 0
+										},
+										{
+											id: user.item
+										}
+									],
+									function(err) {
+										if (err) throw err;
+										console.log("Order placed succesfully!");
+									}
+								);
+							}
+						});
+					// console.log(
+					// 	"Oops! Looks like we only have " +
+					// 		available[i].stock +
+					// 		" in stock. Would you like to place an order for" +
+					// 		available[i].stock +
+					// 		"?"
+					// );
+				}
 			}
-		}
+		});
 	});
 }
 
