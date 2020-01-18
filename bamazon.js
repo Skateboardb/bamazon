@@ -47,7 +47,8 @@ function allItems(answer) {
 
 			available.push({
 				name: res[i].product_name,
-				ID: res[i].item_id
+				ID: res[i].item_id,
+				stock: res[i].stock_quantity
 			});
 		}
 		itemPrompt();
@@ -77,8 +78,44 @@ var questions = [
 ];
 
 function itemPrompt() {
-	inquirer.prompt(questions, processAnswers).then();
+	inquirer.prompt(questions).then(function(user) {
+		for (let i = 0; i < available.length; i++) {
+			if (user.item == available[i].ID && user.quantity <= available[i].stock) {
+				console.log("success");
+			} else if (
+				user.item == available[i].ID &&
+				user.quantity > available[i].stock
+			) {
+				inquirer.prompt({
+					type: "confirm",
+					name: "excess",
+					message:
+						"Oops! Looks like we only have " +
+						available[i].stock +
+						" in stock. Would you like to place an order for " +
+						available[i].stock +
+						"?"
+				});
+				// .then(function(user){
+				// 	if (user.excess) {
+				// 		console.log("")
+				// 	}
+				// });
+				// console.log(
+				// 	"Oops! Looks like we only have " +
+				// 		available[i].stock +
+				// 		" in stock. Would you like to place an order for" +
+				// 		available[i].stock +
+				// 		"?"
+				// );
+			}
+		}
+	});
 }
+
+// function idLookup(res) {
+
+// }
 // itemPrompt()
 
 // -- prompts user to enter id of desired item
