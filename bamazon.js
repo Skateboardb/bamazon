@@ -104,6 +104,7 @@ function itemPrompt() {
 							// console.log(stock_quantity);
 						}
 					);
+					console.log("Total Cost: $" + available[i].price * user.quantity);
 				} else if (
 					user.item == available[i].ID &&
 					user.quantity > available[i].stock
@@ -130,7 +131,7 @@ function itemPrompt() {
 											stock_quantity: 0
 										},
 										{
-											id: user.item
+											item_id: user.item
 										}
 									],
 									function(err) {
@@ -140,13 +141,8 @@ function itemPrompt() {
 								);
 							}
 						});
-					// console.log(
-					// 	"Oops! Looks like we only have " +
-					// 		available[i].stock +
-					// 		" in stock. Would you like to place an order for" +
-					// 		available[i].stock +
-					// 		"?"
-					// );
+					// test to get at the available returned by the for loop and if statement
+					console.log(available[i]);
 				}
 			}
 		});
@@ -175,3 +171,7 @@ function itemPrompt() {
 // -- update database to reflect remaining quantity
 
 // -- show customer total cost of purchase
+
+// ---------------------------------------------
+
+// remaining issues: attempted overstock orders don't update database; can't access item price from promise
